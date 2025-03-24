@@ -1,0 +1,25 @@
+services:
+  grafana:
+    image: grafana/grafana-oss:11.5.2-ubuntu
+    container_name: grafana
+    environment:
+      - GF_SECURITY_ADMIN_PASSWORD=${PASSWORD}
+      - GF_PLUGINS_PREINSTALL=alexanderzobnin-zabbix-app
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.grafana.rule=Host(`${DOMINIO}`)"
+      - "traefik.http.routers.grafana.entrypoints=websecure"
+      - "traefik.http.routers.grafana.tls=true"
+      - "traefik.http.routers.grafana.tls.certresolver=le"
+      - "traefik.http.services.grafana.loadbalancer.server.port=3000"
+    volumes:
+      - ./grafana-storage:/var/lib/grafana
+    networks:
+      - zbxnet
+      - webnet
+      
+networks:
+  zbxnet:
+    external: true
+  webnet:
+    external: true
